@@ -1,1 +1,2 @@
-# kot - A command-line based text editor.
+# kot
+Kot is a command-line based text editor.
