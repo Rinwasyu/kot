@@ -31,7 +31,7 @@ void draw_clear() {
 }
 
 void draw_titlebar() {
-	printf("\e[1;1H\e[7m kot %dx%d row:%d/%d col:%d \e[m\e[m\n", ws.ws_col, ws.ws_row, cursor.row + 1, doc.rows, cursor.col + 1);
+	printf("\e[1;1H\e[7m kot %dx%d row:%d/%d col:%d \e[m\e[m\n", ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, cursor.col + 1);
 	fflush(stdout);
 }
 
