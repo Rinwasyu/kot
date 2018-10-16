@@ -19,11 +19,17 @@
  */
 
 struct Draw {
+	void (*init)();
 	void (*clear)();
 	void (*titlebar)();
 	void (*body)();
 	void (*repaint)(struct Draw *);
 };
+
+void draw_init() {
+	system("stty echo -icanon min 1 time 0");
+	setvbuf(stdout, 0, _IONBF, 0);
+}
 
 void draw_clear() {
 	printf("\ec\e[1;1H");
@@ -51,6 +57,7 @@ void draw_repaint(struct Draw *draw) {
 }
 
 struct Draw draw = {
+	draw_init,
 	draw_clear,
 	draw_titlebar,
 	draw_body,

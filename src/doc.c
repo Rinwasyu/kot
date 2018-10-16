@@ -21,10 +21,11 @@
 struct Doc {
 	int rows;
 	char **buf;
+	char *file_name;
 	void (*init)(struct Doc *);
-	void (*new)(struct Doc *);
+	void (*new)(struct Doc *, char *);
 	void (*open)(struct Doc *, char *);
-	void (*save)(struct Doc *, char *);
+	void (*save)(struct Doc *);
 };
 
 void doc_init(struct Doc *doc) {
@@ -32,11 +33,13 @@ void doc_init(struct Doc *doc) {
 	for (int i = 0; i < 1000; i++) doc->buf[i] = (char *)malloc(sizeof(char) * DOC_MAXIMUM_COLS);
 }
 
-void doc_new(struct Doc *doc) {
+void doc_new(struct Doc *doc, char *file_name) {
+	doc->file_name = file_name;
 }
 
 void doc_open(struct Doc *doc, char *file_name) {
 	FILE *fp = fopen(file_name, "r");
+	doc->file_name = file_name;
 	
 	char f_buf[DOC_MAXIMUM_COLS];
 	for (int i = 0; fgets(f_buf, DOC_MAXIMUM_COLS, fp) != NULL; i++) {
@@ -50,12 +53,12 @@ void doc_open(struct Doc *doc, char *file_name) {
 	fclose(fp);
 }
 
-void doc_save(struct Doc *doc, char *file_name) {
-	FILE *fp = fopen(file_name, "w");
+void doc_save(struct Doc *doc) {
+	FILE *fp = fopen(doc->file_name, "w");
 	
 	for (int i = 0; i < doc->rows; i++) {
 		fputs(doc->buf[i], fp);
-		fputs("\n", fp); // Add '\n'
+		if (i != doc->rows - 1) fputs("\n", fp); // Add '\n'
 	}
 	
 	fclose(fp);
@@ -63,6 +66,7 @@ void doc_save(struct Doc *doc, char *file_name) {
 
 struct Doc doc = {
 	1,
+	NULL,
 	NULL,
 	doc_init,
 	doc_new,
