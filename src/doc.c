@@ -35,6 +35,7 @@ void doc_init(struct Doc *doc) {
 
 void doc_new(struct Doc *doc, char *file_name) {
 	doc->file_name = file_name;
+	doc->rows = 1;
 }
 
 void doc_open(struct Doc *doc, char *file_name) {
@@ -43,11 +44,11 @@ void doc_open(struct Doc *doc, char *file_name) {
 	
 	char f_buf[DOC_MAXIMUM_COLS];
 	for (int i = 0; fgets(f_buf, DOC_MAXIMUM_COLS, fp) != NULL; i++) {
+		doc->rows++;
 		memset(doc->buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
 		f_buf[strlen(f_buf) - 1] = 0; // Remove '\n'
 		strcpy(doc->buf[i], f_buf);
 		memset(f_buf, 0, sizeof(char) * DOC_MAXIMUM_COLS);
-		doc->rows++;
 	}
 	
 	fclose(fp);
@@ -58,14 +59,14 @@ void doc_save(struct Doc *doc) {
 	
 	for (int i = 0; i < doc->rows; i++) {
 		fputs(doc->buf[i], fp);
-		if (i != doc->rows - 1) fputs("\n", fp); // Add '\n'
+		fputs("\n", fp); // Add '\n'
 	}
 	
 	fclose(fp);
 }
 
 struct Doc doc = {
-	1,
+	0,
 	NULL,
 	NULL,
 	doc_init,
