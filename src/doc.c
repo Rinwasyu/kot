@@ -46,7 +46,7 @@ void doc_open(struct Doc *doc, char *file_name) {
 	for (int i = 0; fgets(f_buf, DOC_MAXIMUM_COLS, fp) != NULL && i < DOC_MAXIMUM_ROWS; i++) {
 		doc->rows++;
 		memset(doc->buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
-		f_buf[strlen(f_buf) - 1] = 0; // Remove '\n'
+		if (f_buf[strlen(f_buf) - 1] == '\n') f_buf[strlen(f_buf) - 1] = 0; // Remove '\n'
 		strcpy(doc->buf[i], f_buf);
 		memset(f_buf, 0, sizeof(char) * DOC_MAXIMUM_COLS);
 	}
@@ -59,7 +59,7 @@ void doc_save(struct Doc *doc) {
 	
 	for (int i = 0; i < doc->rows; i++) {
 		fputs(doc->buf[i], fp);
-		fputs("\n", fp); // Add '\n'
+		if (i != doc->rows - 1) fputs("\n", fp); // Add '\n'
 	}
 	
 	fclose(fp);
