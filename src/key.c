@@ -46,29 +46,33 @@ void key_exit() {
 }
 
 void key_pushbuf(char ch) {
-	char cpy_ch;
-	for (int i = cursor.col; i < strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
-		cpy_ch = doc.buf[editor.row + cursor.row][i];
-		doc.buf[editor.row + cursor.row][i] = ch;
-		ch = cpy_ch;
+	if (strlen(doc.buf[editor.row + cursor.row]) < DOC_MAXIMUM_COLS) {
+		char cpy_ch;
+		for (int i = cursor.col; i < strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
+			cpy_ch = doc.buf[editor.row + cursor.row][i];
+			doc.buf[editor.row + cursor.row][i] = ch;
+			ch = cpy_ch;
+		}
 	}
 }
 
 void key_enter() {
-	char cpy1_buf[DOC_MAXIMUM_COLS];
-	strcpy(cpy1_buf, &doc.buf[editor.row + cursor.row][cursor.col]);
-	memset(&doc.buf[editor.row + cursor.row][cursor.col], 0, sizeof(char) * DOC_MAXIMUM_COLS);
-	for (int i = editor.row + cursor.row + 1; i < doc.rows + 1; i++) {
-		char cpy2_buf[DOC_MAXIMUM_COLS] = {0};
-		strcpy(cpy2_buf, doc.buf[i]);
-		memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
-		strcpy(doc.buf[i], cpy1_buf);
-		memset(cpy1_buf, 0, sizeof(char) * DOC_MAXIMUM_COLS);
-		strcpy(cpy1_buf, cpy2_buf);
+	if (doc.rows < DOC_MAXIMUM_ROWS) {
+		char cpy1_buf[DOC_MAXIMUM_COLS];
+		strcpy(cpy1_buf, &doc.buf[editor.row + cursor.row][cursor.col]);
+		memset(&doc.buf[editor.row + cursor.row][cursor.col], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+		for (int i = editor.row + cursor.row + 1; i < doc.rows + 1; i++) {
+			char cpy2_buf[DOC_MAXIMUM_COLS] = {0};
+			strcpy(cpy2_buf, doc.buf[i]);
+			memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+			strcpy(doc.buf[i], cpy1_buf);
+			memset(cpy1_buf, 0, sizeof(char) * DOC_MAXIMUM_COLS);
+			strcpy(cpy1_buf, cpy2_buf);
+		}
+		
+		doc.rows++;
+		cursor.right(&cursor);
 	}
-	
-	doc.rows++;
-	cursor.right(&cursor);
 }
 
 void key_backspace() {

@@ -30,7 +30,7 @@ struct Doc {
 
 void doc_init(struct Doc *doc) {
 	doc->buf = (char **)malloc(sizeof(char *) * DOC_MAXIMUM_ROWS);
-	for (int i = 0; i < 1000; i++) doc->buf[i] = (char *)malloc(sizeof(char) * DOC_MAXIMUM_COLS);
+	for (int i = 0; i < DOC_MAXIMUM_ROWS; i++) doc->buf[i] = (char *)malloc(sizeof(char) * DOC_MAXIMUM_COLS);
 }
 
 void doc_new(struct Doc *doc, char *file_name) {
@@ -43,7 +43,7 @@ void doc_open(struct Doc *doc, char *file_name) {
 	doc->file_name = file_name;
 	
 	char f_buf[DOC_MAXIMUM_COLS];
-	for (int i = 0; fgets(f_buf, DOC_MAXIMUM_COLS, fp) != NULL; i++) {
+	for (int i = 0; fgets(f_buf, DOC_MAXIMUM_COLS, fp) != NULL && i < DOC_MAXIMUM_ROWS; i++) {
 		doc->rows++;
 		memset(doc->buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
 		f_buf[strlen(f_buf) - 1] = 0; // Remove '\n'
