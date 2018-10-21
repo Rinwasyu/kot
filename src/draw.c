@@ -19,11 +19,17 @@
  */
 
 struct Draw {
+	void (*init)();
 	void (*clear)();
 	void (*titlebar)();
 	void (*body)();
 	void (*repaint)(struct Draw *);
 };
+
+void draw_init() {
+	system("stty echo -icanon min 1 time 0");
+	setvbuf(stdout, 0, _IONBF, 0);
+}
 
 void draw_clear() {
 	printf("\ec\e[1;1H");
@@ -31,7 +37,7 @@ void draw_clear() {
 }
 
 void draw_titlebar() {
-	printf("\e[1;1H\e[7m kot %dx%d row:%d/%d col:%d \e[m\e[m\n", ws.ws_col, ws.ws_row, cursor.row + 1, doc.rows, cursor.col + 1);
+	printf("\e[1;1H\e[7m kot %dx%d row:%d/%d col:%d \e[m\e[m\n", ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, cursor.col + 1);
 	fflush(stdout);
 }
 
@@ -51,6 +57,7 @@ void draw_repaint(struct Draw *draw) {
 }
 
 struct Draw draw = {
+	draw_init,
 	draw_clear,
 	draw_titlebar,
 	draw_body,

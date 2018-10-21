@@ -42,10 +42,10 @@
 #include "key.c"
 
 void setup() {
-	system("stty echo -icanon min 1 time 0");
-	system("stty stop undef");
-	setvbuf(stdout, 0, _IONBF, 0);
+	key.init();
+	draw.init();
 	doc.init(&doc);
+	atexit(key.exit);
 	atexit(draw.clear);
 }
 
@@ -68,7 +68,7 @@ int update() {
 int main(int argc, char **argv) {
 	setup();
 	if (argc == 1) {
-		doc.new(&doc);
+		doc.new(&doc, "file.txt");
 	} else {
 		doc.open(&doc, argv[1]);
 	}

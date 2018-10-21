@@ -26,6 +26,8 @@ enum key_Mode {
 
 struct Key {
 	enum key_Mode mode;
+	void (*init)();
+	void (*exit)();
 	void (*input)(struct Key *key);
 	void (*pushbuf)(char);
 	void (*enter)();
@@ -33,30 +35,44 @@ struct Key {
 	void (*delete)();
 };
 
+void key_init() {
+	system("stty stop undef");
+	system("stty start undef");
+}
+
+void key_exit() {
+	system("stty stop ^S");
+	system("stty start ^Q");
+}
+
 void key_pushbuf(char ch) {
-	char cpy_ch;
-	for (int i = cursor.col; i < strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
-		cpy_ch = doc.buf[editor.row + cursor.row][i];
-		doc.buf[editor.row + cursor.row][i] = ch;
-		ch = cpy_ch;
+	if (strlen(doc.buf[editor.row + cursor.row]) < DOC_MAXIMUM_COLS) {
+		char cpy_ch;
+		for (int i = cursor.col; i < strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
+			cpy_ch = doc.buf[editor.row + cursor.row][i];
+			doc.buf[editor.row + cursor.row][i] = ch;
+			ch = cpy_ch;
+		}
 	}
 }
 
 void key_enter() {
-	char cpy1_buf[DOC_MAXIMUM_COLS];
-	strcpy(cpy1_buf, &doc.buf[editor.row + cursor.row][cursor.col]);
-	memset(&doc.buf[editor.row + cursor.row][cursor.col], 0, sizeof(char) * DOC_MAXIMUM_COLS);
-	for (int i = editor.row + cursor.row + 1; i < doc.rows + 1; i++) {
-		char cpy2_buf[DOC_MAXIMUM_COLS] = {0};
-		strcpy(cpy2_buf, doc.buf[i]);
-		memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
-		strcpy(doc.buf[i], cpy1_buf);
-		memset(cpy1_buf, 0, sizeof(char) * DOC_MAXIMUM_COLS);
-		strcpy(cpy1_buf, cpy2_buf);
+	if (doc.rows < DOC_MAXIMUM_ROWS) {
+		char cpy1_buf[DOC_MAXIMUM_COLS];
+		strcpy(cpy1_buf, &doc.buf[editor.row + cursor.row][cursor.col]);
+		memset(&doc.buf[editor.row + cursor.row][cursor.col], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+		for (int i = editor.row + cursor.row + 1; i < doc.rows + 1; i++) {
+			char cpy2_buf[DOC_MAXIMUM_COLS] = {0};
+			strcpy(cpy2_buf, doc.buf[i]);
+			memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+			strcpy(doc.buf[i], cpy1_buf);
+			memset(cpy1_buf, 0, sizeof(char) * DOC_MAXIMUM_COLS);
+			strcpy(cpy1_buf, cpy2_buf);
+		}
+		
+		doc.rows++;
+		cursor.right(&cursor);
 	}
-	
-	doc.rows++;
-	cursor.right(&cursor);
 }
 
 void key_backspace() {
@@ -97,11 +113,23 @@ void key_input(struct Key *key) {
 	
 	if (key->mode == INSERT) {
 		switch (ch) {
-			case 4:		// Ctrl-d
+			case 1:	 case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
 				break;
 			case 10:	// Enter
 				key->enter();
 				draw.repaint(&draw);
+				break;
+			case 11: case 12: case 14: case 15: case 16:
+				break;
+			case 17:	// Ctrl-q
+				exit(0);
+				break;
+			case 18:
+				break;
+			case 19:	// Ctrl-s
+				doc.save(&doc);
+				break;
+			case 20: case 21: case 22: case 23: case 24: case 25: case 26:
 				break;
 			case 27:	// to ESC mode
 				key->mode = ESC;
@@ -155,6 +183,8 @@ void key_input(struct Key *key) {
 
 struct Key key = {
 	INSERT,
+	key_init,
+	key_exit,
 	key_input,
 	key_pushbuf,
 	key_enter,
