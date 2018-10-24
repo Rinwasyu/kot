@@ -105,6 +105,7 @@ void key_delete() {
 			memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
 			strcpy(doc.buf[i], doc.buf[i+1]);
 		}
+		if (doc.rows > 1) doc.rows--;
 	}
 }
 
