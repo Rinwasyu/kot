@@ -37,13 +37,15 @@ void draw_clear() {
 }
 
 void draw_titlebar() {
-	printf("\e[1;1H\e[7m kot %dx%d row:%d/%d col:%d \e[m\e[m\n", ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, cursor.col + 1);
+	printf("\e[1;1H\e[7m kot %dx%d row:%d/%d col:%d \e[m\e[m\n", ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, editor.col + cursor.col + 1);
 	fflush(stdout);
 }
 
 void draw_body() {
 	for (int i = editor.row; i < min(ws.ws_row - DRAW_TITLEBAR_HEIGHT + editor.row, doc.rows); i++) {
-		printf("%s", doc.buf[i]);
+		for (int j = editor.col; j < min(ws.ws_col + editor.col, (int)strlen(doc.buf[i]) + editor.col); j++) {
+			printf("%c", doc.buf[i][j]);
+		}
 		if (i != min(ws.ws_row - DRAW_TITLEBAR_HEIGHT + editor.row, doc.rows) - 1) printf("\n");
 	}
 	fflush(stdout);
