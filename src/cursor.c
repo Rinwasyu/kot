@@ -128,17 +128,8 @@ void cursor_down(struct Cursor *cursor) {
 }
 
 void cursor_home(struct Cursor *cursor) {
-	if (ws.ws_col > editor.col + cursor->col - (int)strlen(doc.buf[editor.row + cursor->row])) {
-		cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
-	} else {
-		if (editor.col + cursor->col > ws.ws_col) {
-			editor.col = (int)strlen(doc.buf[editor.row + cursor->row]);
-			cursor->col = 0;
-		} else {
-			editor.col = max(0, (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1);
-			cursor->col = min((int)strlen(doc.buf[editor.row + cursor->row]),  ws.ws_col - 1);
-		}
-	}
+	editor.col = max(0, (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1);
+	cursor->col = min((int)strlen(doc.buf[editor.row + cursor->row]),  ws.ws_col - 1);
 }
 
 void cursor_end(struct Cursor *cursor) {
