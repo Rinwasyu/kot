@@ -118,7 +118,7 @@ void cursor_down(struct Cursor *cursor) {
 }
 
 void cursor_home(struct Cursor *cursor) {
-	if (editor.col + cursor->col > (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1) {
+	if (editor.col + ws.ws_col - (int)strlen(doc.buf[editor.row + cursor->row]) >= 0) {
 		cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
 	} else {
 		editor.col = (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1;
