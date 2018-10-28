@@ -167,9 +167,9 @@ void key_input(struct Key *key) {
 			case 68:
 				cursor.left(&cursor); break;
 			case 70:
-				cursor.home(&cursor); break;
-			case 72:
 				cursor.end(&cursor); break;
+			case 72:
+				cursor.home(&cursor); break;
 			case 126:
 				key->delete(); break;
 			default:

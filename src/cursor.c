@@ -26,8 +26,8 @@ struct Cursor {
 	void (*left)(struct Cursor *);
 	void (*up)(struct Cursor *);
 	void (*down)(struct Cursor *);
-	void (*home)(struct Cursor *);
 	void (*end)(struct Cursor *);
+	void (*home)(struct Cursor *);
 };
 
 void cursor_currentPos(struct Cursor *cursor) {
