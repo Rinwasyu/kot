@@ -48,7 +48,7 @@ void key_exit() {
 void key_pushbuf(char ch) {
 	if (strlen(doc.buf[editor.row + cursor.row]) < DOC_MAXIMUM_COLS) {
 		char cpy_ch;
-		for (int i = cursor.col; i < strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
+		for (int i = editor.col + cursor.col; i < strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
 			cpy_ch = doc.buf[editor.row + cursor.row][i];
 			doc.buf[editor.row + cursor.row][i] = ch;
 			ch = cpy_ch;
@@ -59,8 +59,6 @@ void key_pushbuf(char ch) {
 void key_enter() {
 	if (doc.rows < DOC_MAXIMUM_ROWS) {
 		char cpy1_buf[DOC_MAXIMUM_COLS];
-		strcpy(cpy1_buf, &doc.buf[editor.row + cursor.row][cursor.col]);
-		memset(&doc.buf[editor.row + cursor.row][cursor.col], 0, sizeof(char) * DOC_MAXIMUM_COLS);
 		for (int i = editor.row + cursor.row + 1; i < doc.rows + 1; i++) {
 			char cpy2_buf[DOC_MAXIMUM_COLS] = {0};
 			strcpy(cpy2_buf, doc.buf[i]);
@@ -69,25 +67,28 @@ void key_enter() {
 			memset(cpy1_buf, 0, sizeof(char) * DOC_MAXIMUM_COLS);
 			strcpy(cpy1_buf, cpy2_buf);
 		}
-		
+		strcpy(cpy1_buf, &doc.buf[editor.row + cursor.row][editor.col + cursor.col]);
+		memset(&doc.buf[editor.row + cursor.row][editor.col + cursor.col], 0, sizeof(char) * (DOC_MAXIMUM_COLS - editor.col - cursor.col + 1));
+		strcpy(doc.buf[editor.row + cursor.row + 1], cpy1_buf);
 		doc.rows++;
 		cursor.right(&cursor);
 	}
 }
 
 void key_backspace() {
-	if (cursor.col > 0) {
+	if (editor.col + cursor.col > 0) {
 		cursor.left(&cursor);
-		for (int i = cursor.col; i < strlen(doc.buf[editor.row + cursor.row]); i++) {
+		for (int i = editor.col + cursor.col; i < strlen(doc.buf[editor.row + cursor.row]); i++) {
 			doc.buf[editor.row + cursor.row][i] = doc.buf[editor.row + cursor.row][i+1];
 		}
 	} else {
 		if (editor.row + cursor.row > 0) {
 			cursor.left(&cursor);
 			strcpy(&doc.buf[editor.row + cursor.row][strlen(doc.buf[editor.row + cursor.row])], doc.buf[editor.row + cursor.row+1]);
-			for (int i = editor.row + cursor.row + 1; i < doc.rows; i++) {
+			for (int i = editor.row + cursor.row + 1; i < DOC_MAXIMUM_ROWS - 1; i++) {
 				memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
 				strcpy(doc.buf[i], doc.buf[i+1]);
+				memset(doc.buf[i+1], 0, sizeof(char) * DOC_MAXIMUM_COLS);
 			}
 			doc.rows--;
 		}
@@ -95,16 +96,20 @@ void key_backspace() {
 }
 
 void key_delete() {
-	if (cursor.col < strlen(doc.buf[editor.row + cursor.row])) {
-		for (int i = cursor.col; i < strlen(doc.buf[editor.row + cursor.row]); i++) {
+	if (editor.col + cursor.col < strlen(doc.buf[editor.row + cursor.row])) {
+		for (int i = editor.col + cursor.col; i < strlen(doc.buf[editor.row + cursor.row]); i++) {
 			doc.buf[editor.row + cursor.row][i] = doc.buf[editor.row + cursor.row][i+1];
 		}
 	} else {
-		strcpy(&doc.buf[editor.row + cursor.row][cursor.col], doc.buf[editor.row + cursor.row+1]);
-		for (int i = editor.row + cursor.row + 1; i < doc.rows; i++) {
+		if (doc.rows < DOC_MAXIMUM_ROWS) {
+			strcpy(&doc.buf[editor.row + cursor.row][editor.col + cursor.col], doc.buf[editor.row + cursor.row+1]);
+		}
+		for (int i = editor.row + cursor.row + 1; i < doc.rows && i < DOC_MAXIMUM_ROWS - 1; i++) {
 			memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
 			strcpy(doc.buf[i], doc.buf[i+1]);
+			memset(doc.buf[i+1], 0, sizeof(char) * DOC_MAXIMUM_COLS);
 		}
+		if (doc.rows > cursor.row + editor.row + 1) doc.rows--;
 	}
 }
 
@@ -167,9 +172,9 @@ void key_input(struct Key *key) {
 			case 68:
 				cursor.left(&cursor); break;
 			case 70:
-				cursor.home(&cursor); break;
-			case 72:
 				cursor.end(&cursor); break;
+			case 72:
+				cursor.home(&cursor); break;
 			case 126:
 				key->delete(); break;
 			default:

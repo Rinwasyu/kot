@@ -26,8 +26,8 @@ struct Cursor {
 	void (*left)(struct Cursor *);
 	void (*up)(struct Cursor *);
 	void (*down)(struct Cursor *);
-	void (*home)(struct Cursor *);
 	void (*end)(struct Cursor *);
+	void (*home)(struct Cursor *);
 };
 
 void cursor_currentPos(struct Cursor *cursor) {
@@ -36,10 +36,15 @@ void cursor_currentPos(struct Cursor *cursor) {
 }
 
 void cursor_right(struct Cursor *cursor) {
-	if (cursor->col < strlen(doc.buf[editor.row + cursor->row])) {
-		cursor->col++;
+	if (editor.col + cursor->col < (int)strlen(doc.buf[editor.row + cursor->row])) {
+		if (cursor->col == ws.ws_col - 1) {
+			editor.col++;
+		} else {
+			cursor->col++;
+		}
 	} else {
 		if (editor.row + cursor->row < doc.rows-1) {
+			editor.col = 0;
 			cursor->col = 0;
 			if (cursor->row == ws.ws_row - DRAW_TITLEBAR_HEIGHT - 1) {
 				editor.row++;
@@ -51,8 +56,14 @@ void cursor_right(struct Cursor *cursor) {
 }
 
 void cursor_left(struct Cursor *cursor) {
-	if (cursor->col > 0) {
-		cursor->col--;
+	if (editor.col + cursor->col > 0) {
+		if (cursor->col == 0) {
+			if (editor.col > 0) {
+				editor.col--;
+			}
+		} else {
+			cursor->col--;
+		}
 	} else {
 		if (editor.row + cursor->row > 0) {
 			if (cursor->row == 0) {
@@ -60,7 +71,8 @@ void cursor_left(struct Cursor *cursor) {
 			} else {
 				cursor->row--;
 			}
-			cursor->col = strlen(doc.buf[editor.row + cursor->row]);
+			editor.col = max(0, (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1);
+			cursor->col = min((int)strlen(doc.buf[editor.row + cursor->row]),  ws.ws_col - 1);
 		}
 	}
 }
@@ -69,13 +81,19 @@ void cursor_up(struct Cursor *cursor) {
 	if (editor.row + cursor->row > 0) {
 		if (cursor->row == 0) {
 			editor.row--;
-			if (cursor->col > strlen(doc.buf[editor.row + cursor->row])) {
-				cursor->col = strlen(doc.buf[editor.row + cursor->row]);
+			if (editor.col + cursor->col > (int)strlen(doc.buf[editor.row + cursor->row])) {
+				editor.col = max(0, (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1);
+				cursor->col = min((int)strlen(doc.buf[editor.row + cursor->row]),  ws.ws_col - 1);
 			}
 		} else {
 			cursor->row--;
-			if (cursor->col > strlen(doc.buf[editor.row + cursor->row])) {
-				cursor->col = strlen(doc.buf[editor.row + cursor->row]);
+			if (editor.col + cursor->col > (int)strlen(doc.buf[editor.row + cursor->row])) {
+				if (editor.col < (int)strlen(doc.buf[editor.row + cursor->row])) {
+					cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
+				} else {
+					editor.col = (int)strlen(doc.buf[editor.row + cursor->row]);
+					cursor->col = 0;
+				}
 			}
 		}
 	}
@@ -87,18 +105,29 @@ void cursor_down(struct Cursor *cursor) {
 			editor.row++;
 		} else {
 			cursor->row++;
-			if (cursor->col > strlen(doc.buf[editor.row + cursor->row])) {
-				cursor->col = strlen(doc.buf[editor.row + cursor->row]);
+			if (editor.col + cursor->col > (int)strlen(doc.buf[editor.row + cursor->row])) {
+				if (editor.col < (int)strlen(doc.buf[editor.row + cursor->row])) {
+					cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
+				} else {
+					editor.col = (int)strlen(doc.buf[editor.row + cursor->row]);
+					cursor->col = 0;
+				}
 			}
 		}
 	}
 }
 
-void cursor_home(struct Cursor *cursor) {
-	cursor->col = strlen(doc.buf[editor.row + cursor->row]);
+void cursor_end(struct Cursor *cursor) {
+	if (editor.col + ws.ws_col - (int)strlen(doc.buf[editor.row + cursor->row]) >= 0) {
+		cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
+	} else {
+		editor.col = (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1;
+		cursor->col = ws.ws_col - 1;
+	}
 }
 
-void cursor_end(struct Cursor *cursor) {
+void cursor_home(struct Cursor *cursor) {
+	editor.col = 0;
 	cursor->col = 0;
 }
 
@@ -110,6 +139,6 @@ struct Cursor cursor = {
 	cursor_left,
 	cursor_up,
 	cursor_down,
-	cursor_home,
-	cursor_end
+	cursor_end,
+	cursor_home
 };
