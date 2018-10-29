@@ -20,6 +20,7 @@
 
 struct Draw {
 	void (*init)();
+	void (*exit)();
 	void (*clear)();
 	void (*titlebar)();
 	void (*body)();
@@ -28,17 +29,20 @@ struct Draw {
 
 void draw_init() {
 	system("stty echo -icanon min 1 time 0");
-	setvbuf(stdout, 0, _IONBF, 0);
+	system("stty -echo");
+	setvbuf(stdout, NULL, _IOFBF, 0);
+}
+
+void draw_exit() {
+	system("stty echo");
 }
 
 void draw_clear() {
 	printf("\ec\e[1;1H");
-	fflush(stdout);
 }
 
 void draw_titlebar() {
 	printf("\e[1;1H\e[7m kot %dx%d row:%d/%d col:%d \e[m\e[m\n", ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, editor.col + cursor.col + 1);
-	fflush(stdout);
 }
 
 void draw_body() {
@@ -48,7 +52,6 @@ void draw_body() {
 		}
 		if (i != min(ws.ws_row - DRAW_TITLEBAR_HEIGHT + editor.row, doc.rows) - 1) printf("\n");
 	}
-	fflush(stdout);
 }
 
 void draw_repaint(struct Draw *draw) {
@@ -56,10 +59,12 @@ void draw_repaint(struct Draw *draw) {
 	draw->titlebar();
 	draw->body();
 	cursor.currentPos(&cursor);
+	fflush(stdout);
 }
 
 struct Draw draw = {
 	draw_init,
+	draw_exit,
 	draw_clear,
 	draw_titlebar,
 	draw_body,

@@ -47,6 +47,7 @@ void setup() {
 	doc.init(&doc);
 	atexit(key.exit);
 	atexit(draw.clear);
+	atexit(draw.exit);
 }
 
 int update() {
