@@ -68,7 +68,8 @@ void key_enter() {
 			strcpy(cpy1_buf, cpy2_buf);
 		}
 		strcpy(cpy1_buf, &doc.buf[editor.row + cursor.row][editor.col + cursor.col]);
-		memset(&doc.buf[editor.row + cursor.row][editor.col + cursor.col], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+		memset(&doc.buf[editor.row + cursor.row][editor.col + cursor.col], 0, sizeof(char) * (DOC_MAXIMUM_COLS - editor.col - cursor.col + 1));
+		strcpy(doc.buf[editor.row + cursor.row + 1], cpy1_buf);
 		doc.rows++;
 		cursor.right(&cursor);
 	}
