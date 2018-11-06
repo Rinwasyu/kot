@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.6.3 (2018-11-06)
+- add feature to create a new document
+
 ## 0.6.2 (2018-10-30)
 - add feature to scroll horizontally
 - fix bugs
