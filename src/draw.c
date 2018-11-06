@@ -34,7 +34,7 @@ void draw_init() {
 }
 
 void draw_exit() {
-	system("stty echo");
+	system("stty sane");
 }
 
 void draw_clear() {
