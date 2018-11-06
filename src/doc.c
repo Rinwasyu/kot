@@ -40,6 +40,12 @@ void doc_new(struct Doc *doc, char *file_name) {
 
 void doc_open(struct Doc *doc, char *file_name) {
 	FILE *fp = fopen(file_name, "r");
+	
+	if (fp == NULL) {
+		doc->new(doc, file_name);
+		return;
+	}
+	
 	doc->file_name = file_name;
 	
 	char f_buf[DOC_MAXIMUM_COLS];
