@@ -30,6 +30,7 @@
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
+#define VERSION "v0.6.3"
 #define DRAW_TITLEBAR_HEIGHT 1
 #define DOC_MAXIMUM_ROWS 2000
 #define DOC_MAXIMUM_COLS 1000

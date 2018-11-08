@@ -41,8 +41,6 @@ void key_init() {
 }
 
 void key_exit() {
-	system("stty stop ^S");
-	system("stty start ^Q");
 }
 
 void key_pushbuf(char ch) {

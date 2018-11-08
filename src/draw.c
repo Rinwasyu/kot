@@ -34,7 +34,7 @@ void draw_init() {
 }
 
 void draw_exit() {
-	system("stty echo");
+	system("stty sane");
 }
 
 void draw_clear() {
@@ -42,7 +42,7 @@ void draw_clear() {
 }
 
 void draw_titlebar() {
-	printf("\e[1;1H\e[7m kot %dx%d row:%d/%d col:%d \e[m\e[m\n", ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, editor.col + cursor.col + 1);
+	printf("\e[1;1H\e[7m kot %s %dx%d row:%d/%d col:%d \e[m\e[m\n", VERSION, ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, editor.col + cursor.col + 1);
 }
 
 void draw_body() {
