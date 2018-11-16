@@ -21,7 +21,8 @@
 enum key_Mode {
 	INSERT,
 	ESC,
-	BRACKET
+	BRACKET,
+	NUMPAD
 };
 
 struct Key {
@@ -150,7 +151,7 @@ void key_input(struct Key *key) {
 		return;
 	} else if (key->mode == ESC) {
 		switch (ch) {
-			case 91:
+			case 79: case 91:
 				key->mode = BRACKET;
 				break;
 			default:
@@ -161,6 +162,14 @@ void key_input(struct Key *key) {
 		return;
 	} else if (key->mode == BRACKET) {
 		switch (ch) {
+			case 49:
+				key->mode = NUMPAD;
+				cursor.home(&cursor);
+				return;
+			case 52:
+				key->mode = NUMPAD;
+				cursor.end(&cursor);
+				return;
 			case 65:
 				cursor.up(&cursor); break;
 			case 66:
@@ -177,6 +186,16 @@ void key_input(struct Key *key) {
 				key->delete(); break;
 			default:
 				return;
+		}
+		key->mode = INSERT;
+		draw.repaint(&draw);
+		return;
+	} else if (key->mode == NUMPAD) {
+		switch (ch) {
+			case 126:
+				break;
+			default:
+				break;
 		}
 		key->mode = INSERT;
 		draw.repaint(&draw);

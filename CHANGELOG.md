@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.6.4 (2018-11-17)
+- supported CentOS etc
+
 ## 0.6.3.2 (2018-11-09)
 - fixed features
 
