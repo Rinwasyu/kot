@@ -26,26 +26,31 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <dlfcn.h>
+#include <dirent.h>
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
-#define VERSION "v0.6.3"
+#define VERSION "v0.7.0"
 #define DRAW_TITLEBAR_HEIGHT 1
 #define DOC_MAXIMUM_ROWS 2000
 #define DOC_MAXIMUM_COLS 1000
 
 #include "lib/kbhit.c"
+#include "lib/strjoin.c"
 #include "editor.c"
 #include "doc.c"
 #include "cursor.c"
 #include "draw.c"
 #include "key.c"
+#include "plugin.c"
 
 void setup() {
 	key.init();
 	draw.init();
 	doc.init(&doc);
+	plugin.init(&plugin);
 	atexit(key.exit);
 	atexit(draw.clear);
 	atexit(draw.exit);
