@@ -110,7 +110,12 @@ void key_input(struct Key *key) {
 	
 	if (key->mode == INSERT) {
 		switch (ch) {
-			case 1:	 case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
+			case 1:	 case 2: case 3: case 4: case 5: case 6: case 7:
+				break;
+			case 8:
+				key->backspace();
+				break;
+			case 9:
 				break;
 			case 10:	// Enter
 				key->enter();
