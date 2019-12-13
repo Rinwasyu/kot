@@ -22,7 +22,7 @@
 
 PROGNAME	:= kot
 CC			:= gcc
-CFLAGS		:= -O2 -Wall -W
+CFLAGS		:= -O2 -Wall -W -std=c99
 LDFLAGS		:= 
 SRCS		:= $(wildcard *.c)
 OBJS		:= $(SRCS:%.c=%.o)

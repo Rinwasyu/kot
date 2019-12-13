@@ -70,7 +70,7 @@ void key_enter() {
 void key_backspace() {
 	if (editor.col + cursor.col > 0) {
 		cursor.left(&cursor);
-		for (int i = editor.col + cursor.col; i < strlen(doc.buf[editor.row + cursor.row]); i++) {
+		for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]); i++) {
 			doc.buf[editor.row + cursor.row][i] = doc.buf[editor.row + cursor.row][i+1];
 		}
 	} else {
@@ -88,8 +88,8 @@ void key_backspace() {
 }
 
 void key_delete() {
-	if (editor.col + cursor.col < strlen(doc.buf[editor.row + cursor.row])) {
-		for (int i = editor.col + cursor.col; i < strlen(doc.buf[editor.row + cursor.row]); i++) {
+	if (editor.col + cursor.col < (int)strlen(doc.buf[editor.row + cursor.row])) {
+		for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]); i++) {
 			doc.buf[editor.row + cursor.row][i] = doc.buf[editor.row + cursor.row][i+1];
 		}
 	} else {
@@ -133,6 +133,7 @@ void key_input(struct Key *key) {
 				break;
 			case 127:	// BackSpace
 				key->backspace();
+				exit(0);
 				break;
 			default:
 				key->pushbuf(ch);
