@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2019 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,27 +18,28 @@
  * 
  */
 
-#include <sys/ioctl.h>
-#include <unistd.h>
+#ifndef KOT_DOC_H
 
-#include "editor.h"
-#include "kot.h"
+#define KOT_DOC_H
 
-struct winsize ws;
-
-int editor_fit() {
-	int b_ws_col = ws.ws_col;
-	int b_ws_row = ws.ws_row;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-	
-	if (ws.ws_col != b_ws_col || ws.ws_row != b_ws_row) {
-		return 1;
-	}
-	return 0;
-}
-
-struct Editor editor = {
-	0,
-	0,
-	editor_fit
+struct Doc {
+	int rows;
+	char **buf;
+	char *file_name;
+	void (*init)(struct Doc *);
+	void (*new)(struct Doc *, char *);
+	void (*open)(struct Doc *, char *);
+	void (*save)(struct Doc *);
 };
+
+void doc_init(struct Doc *doc);
+
+void doc_new(struct Doc *doc, char *file_name);
+
+void doc_open(struct Doc *doc, char *file_name);
+
+void doc_save(struct Doc *doc);
+
+struct Doc doc;
+
+#endif

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Rinwasyu
+ * Copyright 2018,2019 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,23 +18,16 @@
  * 
  */
 
-enum key_Mode {
-	INSERT,
-	ESC,
-	BRACKET,
-	NUMPAD
-};
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-struct Key {
-	enum key_Mode mode;
-	void (*init)();
-	void (*exit)();
-	void (*input)(struct Key *key);
-	void (*pushbuf)(char);
-	void (*enter)();
-	void (*backspace)();
-	void (*delete)();
-};
+#include "cursor.h"
+#include "doc.h"
+#include "draw.h"
+#include "editor.h"
+#include "key.h"
+#include "kot.h"
 
 void key_init() {
 	system("stty stop undef");
@@ -47,7 +40,7 @@ void key_exit() {
 void key_pushbuf(char ch) {
 	if (strlen(doc.buf[editor.row + cursor.row]) < DOC_MAXIMUM_COLS) {
 		char cpy_ch;
-		for (int i = editor.col + cursor.col; i < strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
+		for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
 			cpy_ch = doc.buf[editor.row + cursor.row][i];
 			doc.buf[editor.row + cursor.row][i] = ch;
 			ch = cpy_ch;

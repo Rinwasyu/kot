@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2019 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,27 +18,36 @@
  * 
  */
 
-#include <sys/ioctl.h>
-#include <unistd.h>
+#ifndef KOT_CURSOR_H
 
-#include "editor.h"
-#include "kot.h"
+#define KOT_CURSOR_H
 
-struct winsize ws;
-
-int editor_fit() {
-	int b_ws_col = ws.ws_col;
-	int b_ws_row = ws.ws_row;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-	
-	if (ws.ws_col != b_ws_col || ws.ws_row != b_ws_row) {
-		return 1;
-	}
-	return 0;
-}
-
-struct Editor editor = {
-	0,
-	0,
-	editor_fit
+struct Cursor {
+	int col;
+	int row;
+	void (*currentPos)(struct Cursor *);
+	void (*right)(struct Cursor *);
+	void (*left)(struct Cursor *);
+	void (*up)(struct Cursor *);
+	void (*down)(struct Cursor *);
+	void (*end)(struct Cursor *);
+	void (*home)(struct Cursor *);
 };
+
+void cursor_currentPos(struct Cursor *cursor);
+
+void cursor_right(struct Cursor *cursor);
+
+void cursor_left(struct Cursor *cursor);
+
+void cursor_up(struct Cursor *cursor);
+
+void cursor_down(struct Cursor *cursor);
+
+void cursor_end(struct Cursor *cursor);
+
+void cursor_home(struct Cursor *cursor);
+
+struct Cursor cursor;
+
+#endif

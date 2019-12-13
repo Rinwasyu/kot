@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2019 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,27 +18,31 @@
  * 
  */
 
-#include <sys/ioctl.h>
-#include <unistd.h>
+#ifndef KOT_DRAW_H
 
-#include "editor.h"
-#include "kot.h"
+#define KOT_DRAW_H
 
-struct winsize ws;
-
-int editor_fit() {
-	int b_ws_col = ws.ws_col;
-	int b_ws_row = ws.ws_row;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-	
-	if (ws.ws_col != b_ws_col || ws.ws_row != b_ws_row) {
-		return 1;
-	}
-	return 0;
-}
-
-struct Editor editor = {
-	0,
-	0,
-	editor_fit
+struct Draw {
+	void (*init)();
+	void (*exit)();
+	void (*clear)();
+	void (*titlebar)();
+	void (*body)();
+	void (*repaint)(struct Draw *);
 };
+
+void draw_init();
+
+void draw_exit();
+
+void draw_clear();
+
+void draw_titlebar();
+
+void draw_body();
+
+void draw_repaint(struct Draw *draw);
+
+struct Draw draw;
+
+#endif
