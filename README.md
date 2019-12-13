@@ -10,4 +10,4 @@ Kot is a command-line based text editor.
 ## License
 Copyright 2018 Rinwasyu
 
-The source code is licensed under GPL v3.
+Kot is licensed under GPL v3.
