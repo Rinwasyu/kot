@@ -138,7 +138,6 @@ void key_input(struct Key *key) {
 				break;
 			case 127:	// BackSpace
 				key->backspace();
-				exit(0);
 				break;
 			default:
 				key->pushbuf(ch);
