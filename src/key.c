@@ -114,6 +114,7 @@ void key_input(struct Key *key) {
 				break;
 			case 8:
 				key->backspace();
+				draw.repaint(&draw);
 				break;
 			case 9:
 				break;
@@ -138,6 +139,7 @@ void key_input(struct Key *key) {
 				break;
 			case 127:	// BackSpace
 				key->backspace();
+				draw.repaint(&draw);
 				break;
 			default:
 				key->pushbuf(ch);
@@ -154,7 +156,6 @@ void key_input(struct Key *key) {
 				break;
 			default:
 				key->mode = INSERT;
-				draw.repaint(&draw);
 				break;
 		}
 		return;
@@ -196,7 +197,6 @@ void key_input(struct Key *key) {
 				break;
 		}
 		key->mode = INSERT;
-		draw.repaint(&draw);
 		return;
 	}
 }

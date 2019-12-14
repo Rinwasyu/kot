@@ -43,7 +43,6 @@ int update() {
 	}
 	if (kbhit()) {
 		key.input(&key);
-		draw.repaint(&draw);
 	} else {
 		if (key.mode == ESC) {
 			return 0;
