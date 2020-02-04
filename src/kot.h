@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,27 +18,21 @@
  * 
  */
 
-#include <sys/ioctl.h>
-#include <unistd.h>
+#ifndef KOT_KOT_H
 
-#include "editor.h"
-#include "kot.h"
+#define KOT_KOT_H
 
-struct winsize ws;
+#define PROGNAME "kot"
+#define VERSION "v0.6.5"
+#define AUTHOR "Rinwasyu"
+#define AUTHOR_YEAR "2018"
+#define WEBSITE "https://github.com/Rinwasyu/kot"
+#define LICENSE "GPL v3"
+#define DRAW_TITLEBAR_HEIGHT 1
+#define DOC_MAXIMUM_ROWS 2000
+#define DOC_MAXIMUM_COLS 1000
 
-int editor_fit() {
-	int b_ws_col = ws.ws_col;
-	int b_ws_row = ws.ws_row;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-	
-	if (ws.ws_col != b_ws_col || ws.ws_row != b_ws_row) {
-		return 1;
-	}
-	return 0;
-}
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
 
-struct Editor editor = {
-	0,
-	0,
-	editor_fit
-};
+#endif

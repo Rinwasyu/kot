@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Rinwasyu
+ * Copyright 2018,2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,29 +18,16 @@
  * 
  */
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <termios.h>
-
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
-
-#define VERSION "v0.6.3"
-#define DRAW_TITLEBAR_HEIGHT 1
-#define DOC_MAXIMUM_ROWS 2000
-#define DOC_MAXIMUM_COLS 1000
 
 #include "lib/kbhit.c"
-#include "editor.c"
-#include "doc.c"
-#include "cursor.c"
-#include "draw.c"
-#include "key.c"
+#include "cursor.h"
+#include "doc.h"
+#include "draw.h"
+#include "editor.h"
+#include "key.h"
+#include "kot.h"
+#include "option.h"
 
 void setup() {
 	key.init();
@@ -57,7 +44,6 @@ int update() {
 	}
 	if (kbhit()) {
 		key.input(&key);
-		draw.repaint(&draw);
 	} else {
 		if (key.mode == ESC) {
 			return 0;
@@ -68,6 +54,7 @@ int update() {
 }
 
 int main(int argc, char **argv) {
+	option.readOptions(&option, argc, argv);
 	setup();
 	if (argc == 1) {
 		doc.new(&doc, "file.txt");

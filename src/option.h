@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,27 +18,20 @@
  * 
  */
 
-#include <sys/ioctl.h>
-#include <unistd.h>
+#ifndef KOT_OPTION_H
 
-#include "editor.h"
-#include "kot.h"
+#define KOT_OPTION_H
 
-struct winsize ws;
-
-int editor_fit() {
-	int b_ws_col = ws.ws_col;
-	int b_ws_row = ws.ws_row;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-	
-	if (ws.ws_col != b_ws_col || ws.ws_row != b_ws_row) {
-		return 1;
-	}
-	return 0;
-}
-
-struct Editor editor = {
-	0,
-	0,
-	editor_fit
+struct Option {
+	void (*readOptions)(struct Option *option, int argc, char **argv);
+	void (*help)(void);
+	void (*version)(void);
 };
+
+void option_help(void);
+void option_version(void);
+void option_readOptions(struct Option *option, int argc, char **argv);
+
+struct Option option;
+
+#endif

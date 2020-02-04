@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Rinwasyu
+ * Copyright 2018,2019 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,23 +18,16 @@
  * 
  */
 
-enum key_Mode {
-	INSERT,
-	ESC,
-	BRACKET,
-	NUMPAD
-};
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-struct Key {
-	enum key_Mode mode;
-	void (*init)();
-	void (*exit)();
-	void (*input)(struct Key *key);
-	void (*pushbuf)(char);
-	void (*enter)();
-	void (*backspace)();
-	void (*delete)();
-};
+#include "cursor.h"
+#include "doc.h"
+#include "draw.h"
+#include "editor.h"
+#include "key.h"
+#include "kot.h"
 
 void key_init() {
 	system("stty stop undef");
@@ -47,7 +40,7 @@ void key_exit() {
 void key_pushbuf(char ch) {
 	if (strlen(doc.buf[editor.row + cursor.row]) < DOC_MAXIMUM_COLS) {
 		char cpy_ch;
-		for (int i = editor.col + cursor.col; i < strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
+		for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
 			cpy_ch = doc.buf[editor.row + cursor.row][i];
 			doc.buf[editor.row + cursor.row][i] = ch;
 			ch = cpy_ch;
@@ -77,7 +70,7 @@ void key_enter() {
 void key_backspace() {
 	if (editor.col + cursor.col > 0) {
 		cursor.left(&cursor);
-		for (int i = editor.col + cursor.col; i < strlen(doc.buf[editor.row + cursor.row]); i++) {
+		for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]); i++) {
 			doc.buf[editor.row + cursor.row][i] = doc.buf[editor.row + cursor.row][i+1];
 		}
 	} else {
@@ -95,8 +88,8 @@ void key_backspace() {
 }
 
 void key_delete() {
-	if (editor.col + cursor.col < strlen(doc.buf[editor.row + cursor.row])) {
-		for (int i = editor.col + cursor.col; i < strlen(doc.buf[editor.row + cursor.row]); i++) {
+	if (editor.col + cursor.col < (int)strlen(doc.buf[editor.row + cursor.row])) {
+		for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]); i++) {
 			doc.buf[editor.row + cursor.row][i] = doc.buf[editor.row + cursor.row][i+1];
 		}
 	} else {
@@ -117,7 +110,13 @@ void key_input(struct Key *key) {
 	
 	if (key->mode == INSERT) {
 		switch (ch) {
-			case 1:	 case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
+			case 1:	 case 2: case 3: case 4: case 5: case 6: case 7:
+				break;
+			case 8:
+				key->backspace();
+				draw.repaint(&draw);
+				break;
+			case 9:
 				break;
 			case 10:	// Enter
 				key->enter();
@@ -140,6 +139,7 @@ void key_input(struct Key *key) {
 				break;
 			case 127:	// BackSpace
 				key->backspace();
+				draw.repaint(&draw);
 				break;
 			default:
 				key->pushbuf(ch);
@@ -156,7 +156,6 @@ void key_input(struct Key *key) {
 				break;
 			default:
 				key->mode = INSERT;
-				draw.repaint(&draw);
 				break;
 		}
 		return;
@@ -198,7 +197,6 @@ void key_input(struct Key *key) {
 				break;
 		}
 		key->mode = INSERT;
-		draw.repaint(&draw);
 		return;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Rinwasyu
+ * Copyright 2018,2019 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,14 +18,15 @@
  * 
  */
 
-struct Draw {
-	void (*init)();
-	void (*exit)();
-	void (*clear)();
-	void (*titlebar)();
-	void (*body)();
-	void (*repaint)(struct Draw *);
-};
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "cursor.h"
+#include "doc.h"
+#include "draw.h"
+#include "editor.h"
+#include "kot.h"
 
 void draw_init() {
 	system("stty echo -icanon min 1 time 0");
