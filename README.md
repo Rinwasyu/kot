@@ -7,6 +7,13 @@
 
 Kot is a command-line based text editor.
 
+## Build
+```shell
+cd src
+make clean
+make all
+```
+
 ## License
 Copyright 2018 Rinwasyu
 

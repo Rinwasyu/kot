@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.6.5 (2020-02-05)
+- supported command-line option
+- supported xterm
+- refactored & fixed
+
 ## 0.6.4 (2018-11-17)
 - supported CentOS etc
 
