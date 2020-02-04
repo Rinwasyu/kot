@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2018,2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -27,6 +27,7 @@
 #include "editor.h"
 #include "key.h"
 #include "kot.h"
+#include "option.h"
 
 void setup() {
 	key.init();
@@ -53,6 +54,7 @@ int update() {
 }
 
 int main(int argc, char **argv) {
+	option.readOptions(&option, argc, argv);
 	setup();
 	if (argc == 1) {
 		doc.new(&doc, "file.txt");
