@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2019 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,27 +18,42 @@
  * 
  */
 
-#include <sys/ioctl.h>
-#include <unistd.h>
+#ifndef KOT_KEY_H
 
-#include "editor.h"
-#include "kot.h"
+#define KOT_KEY_H
 
-struct winsize ws;
-
-int editor_fit() {
-	int b_ws_col = ws.ws_col;
-	int b_ws_row = ws.ws_row;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-	
-	if (ws.ws_col != b_ws_col || ws.ws_row != b_ws_row) {
-		return 1;
-	}
-	return 0;
-}
-
-struct Editor editor = {
-	0,
-	0,
-	editor_fit
+enum key_Mode {
+	INSERT,
+	ESC,
+	BRACKET,
+	NUMPAD
 };
+
+struct Key {
+	enum key_Mode mode;
+	void (*init)();
+	void (*exit)();
+	void (*input)(struct Key *key);
+	void (*pushbuf)(char);
+	void (*enter)();
+	void (*backspace)();
+	void (*delete)();
+};
+
+void key_init();
+
+void key_exit();
+
+void key_pushbuf(char ch);
+
+void key_enter();
+
+void key_backspace();
+
+void key_delete();
+
+void key_input(struct Key *key);
+
+struct Key key;
+
+#endif

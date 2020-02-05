@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Rinwasyu
+ * Copyright 2018,2019 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,17 +18,13 @@
  * 
  */
 
-struct Cursor {
-	int col;
-	int row;
-	void (*currentPos)(struct Cursor *);
-	void (*right)(struct Cursor *);
-	void (*left)(struct Cursor *);
-	void (*up)(struct Cursor *);
-	void (*down)(struct Cursor *);
-	void (*end)(struct Cursor *);
-	void (*home)(struct Cursor *);
-};
+#include <stdio.h>
+#include <string.h>
+
+#include "cursor.h"
+#include "doc.h"
+#include "editor.h"
+#include "kot.h"
 
 void cursor_currentPos(struct Cursor *cursor) {
 	printf("\e[%d;%dH", cursor->row + DRAW_TITLEBAR_HEIGHT + 1, cursor->col + 1);

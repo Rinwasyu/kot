@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Rinwasyu
+ * Copyright 2018,2019 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,15 +18,12 @@
  * 
  */
 
-struct Doc {
-	int rows;
-	char **buf;
-	char *file_name;
-	void (*init)(struct Doc *);
-	void (*new)(struct Doc *, char *);
-	void (*open)(struct Doc *, char *);
-	void (*save)(struct Doc *);
-};
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "doc.h"
+#include "kot.h"
 
 void doc_init(struct Doc *doc) {
 	doc->buf = (char **)malloc(sizeof(char *) * DOC_MAXIMUM_ROWS);
