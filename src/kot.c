@@ -28,15 +28,16 @@
 #include "key.h"
 #include "kot.h"
 #include "option.h"
+#include "plugin.h"
 
 void setup() {
 	key.init();
 	draw.init();
 	doc.init(&doc);
-	plugin.init(&plugin);
 	atexit(key.exit);
 	atexit(draw.clear);
 	atexit(draw.exit);
+	plugin.init(&plugin);
 }
 
 int update() {

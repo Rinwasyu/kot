@@ -1,5 +1,5 @@
 /*
- * Copyright 2019,2020 Rinwasyu
+ * Copyright 2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,21 +18,16 @@
  * 
  */
 
-#ifndef KOT_KOT_H
+#ifndef KOT_PLUGIN_H
 
-#define KOT_KOT_H
+#define KOT_PLUGIN_H
 
-#define PROGNAME "kot"
-#define VERSION "v0.7.0"
-#define AUTHOR "Rinwasyu"
-#define AUTHOR_YEAR "2018"
-#define WEBSITE "https://github.com/Rinwasyu/kot"
-#define LICENSE "GPL v3"
-#define DRAW_TITLEBAR_HEIGHT 1
-#define DOC_MAXIMUM_ROWS 2000
-#define DOC_MAXIMUM_COLS 1000
+struct Plugin {
+	void (*init)(struct Plugin *);
+};
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
+void plugin_init(struct Plugin *plugin);
+
+struct Plugin plugin;
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Rinwasyu
+ * Copyright 2018,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,9 +18,18 @@
  * 
  */
 
-struct Plugin {
-	void (*init)(struct Plugin *);
-};
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <termios.h>
+#include <dlfcn.h>
+#include <dirent.h>
+
+#include "lib/strjoin.c"
+#include "plugin.h"
 
 void plugin_init(struct Plugin *plugin) {
 	DIR *dir;

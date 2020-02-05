@@ -1,5 +1,5 @@
 #
-# Copyright 2019 Rinwasyu
+# Copyright 2019,2020 Rinwasyu
 # 
 # This file is part of kot.
 # 
@@ -23,20 +23,28 @@
 PROGNAME	:= kot
 CC			:= gcc
 CFLAGS		:= -O2 -Wall -W -std=c99
-LDFLAGS		:= 
+LDFLAGS		:= -ldl
 SRCS		:= $(wildcard *.c)
 OBJS		:= $(SRCS:%.c=%.o)
 DEPS		:= $(SRCS:%.c=%.d)
+PLG_SRCS	:= $(wildcard plugin/*.c)
+PLG_SO	:= $(PLG_SRCS:%.c=%.so)
 
-all: $(PROGNAME)
+all: $(PROGNAME) $(PLG_SO)
 
 $(PROGNAME): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -MD -c $<
+	$(CC) -MD -c $< $(CFLAGS)
+
+# Plugin (.so)
+%.so: %.c
+	$(CC) -shared -fPIC -o $@ $< $(CFLAGS)
 
 clean:
+	rm -rf kot
 	rm -rf *.o *.d
+	rm -rf plugin/*.so
 
 -include $(DEPS)
