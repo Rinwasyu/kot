@@ -19,6 +19,7 @@
  */
 
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "lib/kbhit.c"
 #include "cursor.h"

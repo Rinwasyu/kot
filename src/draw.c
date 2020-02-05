@@ -29,13 +29,25 @@
 #include "kot.h"
 
 void draw_init() {
-	system("stty echo -icanon min 1 time 0");
-	system("stty -echo");
+	int errors = 0;
+	if (system("stty echo -icanon min 1 time 0") != 0) errors++;
+	if (system("stty -echo") != 0) errors++;
 	setvbuf(stdout, NULL, _IOFBF, 0);
+	
+	if (errors > 0) {
+		printf("draw_init: error\n");
+		exit(-1);
+	}
 }
 
 void draw_exit() {
-	system("stty sane");
+	int errors = 0;
+	if (system("stty sane") != 0) errors++;
+	
+	if (errors > 0) {
+		printf("draw_exit: error\n");
+		exit(-1);
+	}
 }
 
 void draw_clear() {

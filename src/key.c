@@ -30,8 +30,14 @@
 #include "kot.h"
 
 void key_init() {
-	system("stty stop undef");
-	system("stty start undef");
+	int errors = 0;
+	if (system("stty stop undef") != 0) errors++;
+	if (system("stty start undef") != 0) errors++;
+	
+	if (errors > 0) {
+		printf("key_init: error\n");
+		exit(-1);
+	}
 }
 
 void key_exit() {
