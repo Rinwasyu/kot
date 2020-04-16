@@ -1,4 +1,6 @@
 *.geany
 src/*.d
+src/lib/*.d
 src/*.o
+src/lib/*.o
 src/kot

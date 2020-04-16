@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2018,2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -68,6 +68,13 @@ void doc_save(struct Doc *doc) {
 	fclose(fp);
 }
 
+// TODO:
+void doc_rename(struct Doc *doc, char *file_name) {
+	doc->file_name = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+	memset(doc->file_name, 0, sizeof(char) * BUFFER_SIZE);
+	strncpy(doc->file_name, file_name, BUFFER_SIZE);
+}
+
 struct Doc doc = {
 	0,
 	NULL,
@@ -75,5 +82,6 @@ struct Doc doc = {
 	doc_init,
 	doc_new,
 	doc_open,
-	doc_save
+	doc_save,
+	doc_rename
 };

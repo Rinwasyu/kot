@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2018,2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -27,6 +27,7 @@
 #include "draw.h"
 #include "editor.h"
 #include "kot.h"
+#include "prompt.h"
 
 void draw_init() {
 	int errors = 0;
@@ -55,7 +56,7 @@ void draw_clear() {
 }
 
 void draw_titlebar() {
-	printf("\e[1;1H\e[7m kot %s %dx%d row:%d/%d col:%d \e[m\e[m\n", KOT_VERSION, ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, editor.col + cursor.col + 1);
+	printf("\e[1;1H\e[7m kot %s %dx%d row:%d/%d col:%d ( %s )\e[m\e[m\n", KOT_VERSION, ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, editor.col + cursor.col + 1, doc.file_name);
 }
 
 void draw_body() {
@@ -67,10 +68,25 @@ void draw_body() {
 	}
 }
 
+void draw_prompt() {
+	printf("\e[2;1H\e[7m");
+	int i;
+	for (i = prompt.editor_col; i < min(ws.ws_col + prompt.editor_col, (int)strlen(prompt.buf) + prompt.editor_col); i++) {
+		printf("%c", prompt.buf[i]);
+	}
+	for (; i < ws.ws_col; i++) {
+		printf(" ");
+	}
+	printf("\e[m");
+}
+
 void draw_repaint(struct Draw *draw) {
 	draw->clear();
 	draw->titlebar();
 	draw->body();
+	if (prompt.active) {
+		draw->prompt();
+	}
 	cursor.currentPos(&cursor);
 	fflush(stdout);
 }
@@ -81,5 +97,6 @@ struct Draw draw = {
 	draw_clear,
 	draw_titlebar,
 	draw_body,
+	draw_prompt,
 	draw_repaint
 };

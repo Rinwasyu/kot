@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019,2020 Rinwasyu
+ * Copyright 2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -19,51 +19,44 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "lib/kbhit.h"
-#include "cursor.h"
-#include "doc.h"
 #include "draw.h"
-#include "editor.h"
 #include "key.h"
 #include "kot.h"
-#include "option.h"
+#include "prompt.h"
 
-void setup() {
-	key.init();
-	draw.init();
-	doc.init(&doc);
-	atexit(key.exit);
-	atexit(draw.clear);
-	atexit(draw.exit);
+void prompt_init(struct Prompt *prompt) {
+	prompt->cursor_col = 0;
+	prompt->editor_col = 0;
+	prompt->buf = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+	memset(prompt->buf, 0, sizeof(char) * BUFFER_SIZE);
 }
 
-int update() {
-	if (editor.fit()) {
-		draw.repaint(&draw);
-	}
-	if (kbhit()) {
-		key.input(&key);
-	} else {
-		if (key.mode == ESC) {
-			return 0;
+void prompt_update(struct Prompt *prompt) {
+	prompt->init(prompt);
+	prompt->active = 1;
+	draw.repaint(&draw);
+	while (prompt->active) {
+		if (kbhit()) {
+			key.input(&key);
+		} else {
+			if (key.mode == ESC) {
+				prompt->active = 0;
+				key.mode = INSERT;
+			}
 		}
+		usleep(1000);
 	}
-	usleep(1000);
-	return 1;
 }
 
-int main(int argc, char **argv) {
-	option.readOptions(&option, argc, argv);
-	setup();
-	if (argc == 1) {
-		doc.new(&doc, "file.txt");
-	} else {
-		doc.open(&doc, argv[1]);
-	}
-	
-	while (update()) {}
-	
-	return 0;
-}
+struct Prompt prompt = {
+	0, // Not active
+	0, // prompt->editor_col
+	0, // prompt->cursor_col
+	NULL,
+	prompt_init,
+	prompt_update
+};

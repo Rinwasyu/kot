@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2018,2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -25,70 +25,100 @@
 #include "doc.h"
 #include "editor.h"
 #include "kot.h"
+#include "prompt.h"
 
 void cursor_currentPos(struct Cursor *cursor) {
-	printf("\e[%d;%dH", cursor->row + DRAW_TITLEBAR_HEIGHT + 1, cursor->col + 1);
+	if (prompt.active == 0) {
+		printf("\e[%d;%dH", cursor->row + DRAW_TITLEBAR_HEIGHT + 1, cursor->col + 1);
+	} else {
+		printf("\e[2;%dH", prompt.cursor_col + 1);
+	}
 	fflush(stdout);
 }
 
 void cursor_right(struct Cursor *cursor) {
-	if (editor.col + cursor->col < (int)strlen(doc.buf[editor.row + cursor->row])) {
-		if (cursor->col == ws.ws_col - 1) {
-			editor.col++;
+	if (prompt.active == 0) {
+		if (editor.col + cursor->col < (int)strlen(doc.buf[editor.row + cursor->row])) {
+			if (cursor->col == ws.ws_col - 1) {
+				editor.col++;
+			} else {
+				cursor->col++;
+			}
 		} else {
-			cursor->col++;
+			if (editor.row + cursor->row < doc.rows-1) {
+				editor.col = 0;
+				cursor->col = 0;
+				if (cursor->row == ws.ws_row - DRAW_TITLEBAR_HEIGHT - 1) {
+					editor.row++;
+				} else {
+					cursor->row++;
+				}
+			}
 		}
 	} else {
-		if (editor.row + cursor->row < doc.rows-1) {
-			editor.col = 0;
-			cursor->col = 0;
-			if (cursor->row == ws.ws_row - DRAW_TITLEBAR_HEIGHT - 1) {
-				editor.row++;
+		// TODO:
+		if (prompt.editor_col + prompt.cursor_col < (int)strlen(prompt.buf)) {
+			if (prompt.cursor_col == ws.ws_col - 1) {
+				editor.col++;
 			} else {
-				cursor->row++;
+				prompt.cursor_col++;
 			}
 		}
 	}
 }
 
 void cursor_left(struct Cursor *cursor) {
-	if (editor.col + cursor->col > 0) {
-		if (cursor->col == 0) {
-			if (editor.col > 0) {
-				editor.col--;
+	if (prompt.active == 0) {
+		if (editor.col + cursor->col > 0) {
+			if (cursor->col == 0) {
+				if (editor.col > 0) {
+					editor.col--;
+				}
+			} else {
+				cursor->col--;
 			}
 		} else {
-			cursor->col--;
+			if (editor.row + cursor->row > 0) {
+				if (cursor->row == 0) {
+					editor.row--;
+				} else {
+					cursor->row--;
+				}
+				editor.col = max(0, (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1);
+				cursor->col = min((int)strlen(doc.buf[editor.row + cursor->row]),  ws.ws_col - 1);
+			}
 		}
 	} else {
-		if (editor.row + cursor->row > 0) {
-			if (cursor->row == 0) {
-				editor.row--;
+		if (prompt.editor_col + prompt.cursor_col > 0) {
+			if (prompt.cursor_col == 0) {
+				if (prompt.editor_col > 0) {
+					prompt.editor_col--;
+				}
 			} else {
-				cursor->row--;
+				prompt.cursor_col--;
 			}
-			editor.col = max(0, (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1);
-			cursor->col = min((int)strlen(doc.buf[editor.row + cursor->row]),  ws.ws_col - 1);
 		}
 	}
 }
 
 void cursor_up(struct Cursor *cursor) {
-	if (editor.row + cursor->row > 0) {
-		if (cursor->row == 0) {
-			editor.row--;
-			if (editor.col + cursor->col > (int)strlen(doc.buf[editor.row + cursor->row])) {
-				editor.col = max(0, (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1);
-				cursor->col = min((int)strlen(doc.buf[editor.row + cursor->row]),  ws.ws_col - 1);
-			}
-		} else {
-			cursor->row--;
-			if (editor.col + cursor->col > (int)strlen(doc.buf[editor.row + cursor->row])) {
-				if (editor.col < (int)strlen(doc.buf[editor.row + cursor->row])) {
-					cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
-				} else {
-					editor.col = (int)strlen(doc.buf[editor.row + cursor->row]);
-					cursor->col = 0;
+	if (prompt.active == 0) {
+		if (editor.row + cursor->row > 0) {
+			if (cursor->row == 0) {
+				editor.row--;
+				if (editor.col + cursor->col > (int)strlen(doc.buf[editor.row + cursor->row])) {
+					editor.col = max(0, (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1);
+					cursor->col = min((int)strlen(doc.buf[editor.row + cursor->row]),  ws.ws_col - 1);
+				}
+			} else {
+				cursor->row--;
+				if (editor.col + cursor->col > (int)strlen(doc.buf[editor.row + cursor->row])) {
+					if (editor.col < (int)strlen(doc.buf[editor.row + cursor->row])) {
+						cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
+					} else {
+						editor.col = (int)strlen(doc.buf[editor.row + cursor->row]);
+						cursor->col = 0;
+					}
 				}
 			}
 		}
@@ -96,17 +126,19 @@ void cursor_up(struct Cursor *cursor) {
 }
 
 void cursor_down(struct Cursor *cursor) {
-	if (editor.row + cursor->row < doc.rows - 1) {
-		if (cursor->row == ws.ws_row - DRAW_TITLEBAR_HEIGHT - 1) {
-			editor.row++;
-		} else {
-			cursor->row++;
-			if (editor.col + cursor->col > (int)strlen(doc.buf[editor.row + cursor->row])) {
-				if (editor.col < (int)strlen(doc.buf[editor.row + cursor->row])) {
-					cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
-				} else {
-					editor.col = (int)strlen(doc.buf[editor.row + cursor->row]);
-					cursor->col = 0;
+	if (prompt.active == 0) {
+		if (editor.row + cursor->row < doc.rows - 1) {
+			if (cursor->row == ws.ws_row - DRAW_TITLEBAR_HEIGHT - 1) {
+				editor.row++;
+			} else {
+				cursor->row++;
+				if (editor.col + cursor->col > (int)strlen(doc.buf[editor.row + cursor->row])) {
+					if (editor.col < (int)strlen(doc.buf[editor.row + cursor->row])) {
+						cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
+					} else {
+						editor.col = (int)strlen(doc.buf[editor.row + cursor->row]);
+						cursor->col = 0;
+					}
 				}
 			}
 		}
@@ -114,17 +146,31 @@ void cursor_down(struct Cursor *cursor) {
 }
 
 void cursor_end(struct Cursor *cursor) {
-	if (editor.col + ws.ws_col - (int)strlen(doc.buf[editor.row + cursor->row]) >= 0) {
-		cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
+	if (prompt.active == 0) {
+		if (editor.col + ws.ws_col - (int)strlen(doc.buf[editor.row + cursor->row]) >= 0) {
+			cursor->col = (int)strlen(doc.buf[editor.row + cursor->row]) - editor.col;
+		} else {
+			editor.col = (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1;
+			cursor->col = ws.ws_col - 1;
+		}
 	} else {
-		editor.col = (int)strlen(doc.buf[editor.row + cursor->row]) - ws.ws_col + 1;
-		cursor->col = ws.ws_col - 1;
+		if (prompt.editor_col + ws.ws_col - (int)strlen(prompt.buf) >= 0) {
+			prompt.cursor_col = (int)strlen(prompt.buf) - prompt.editor_col;
+		} else {
+			prompt.editor_col = (int)strlen(prompt.buf) - ws.ws_col + 1;
+			prompt.cursor_col = ws.ws_col - 1;
+		}
 	}
 }
 
 void cursor_home(struct Cursor *cursor) {
-	editor.col = 0;
-	cursor->col = 0;
+	if (prompt.active == 0) {
+		editor.col = 0;
+		cursor->col = 0;
+	} else {
+		prompt.editor_col = 0;
+		prompt.cursor_col = 0;
+	}
 }
 
 struct Cursor cursor = {

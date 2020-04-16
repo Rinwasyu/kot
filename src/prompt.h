@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rinwasyu
+ * Copyright 2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,34 +18,22 @@
  * 
  */
 
-#ifndef KOT_DRAW_H
+#ifndef KOT_PROMPT_H
 
-#define KOT_DRAW_H
+#define KOT_PROMPT_H
 
-struct Draw {
-	void (*init)();
-	void (*exit)();
-	void (*clear)();
-	void (*titlebar)();
-	void (*body)();
-	void (*prompt)();
-	void (*repaint)(struct Draw *);
+struct Prompt {
+	int active;
+	int editor_col;
+	int cursor_col;
+	char *buf;
+	void (*init)(struct Prompt *);
+	void (*update)(struct Prompt *);
 };
 
-void draw_init();
+void prompt_init(struct Prompt *prompt);
+void prompt_update(struct Prompt *prompt);
 
-void draw_exit();
-
-void draw_clear();
-
-void draw_titlebar();
-
-void draw_body();
-
-void draw_prompt();
-
-void draw_repaint(struct Draw *draw);
-
-struct Draw draw;
+struct Prompt prompt;
 
 #endif
