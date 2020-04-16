@@ -26,7 +26,8 @@
 #include "option.h"
 
 void option_help() {
-	printf("Usage: %s [--help] [--version]\n", KOT_PROGNAME);
+	printf("Usage: %s [--help] [--version] [FILE]\n", KOT_PROGNAME);
+	printf("Edit the FILE (a \"file.txt\" by default)\n");
 	exit(0);
 }
 

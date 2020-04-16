@@ -68,7 +68,6 @@ void doc_save(struct Doc *doc) {
 	fclose(fp);
 }
 
-// TODO:
 void doc_rename(struct Doc *doc, char *file_name) {
 	doc->file_name = (char *)malloc(sizeof(char) * BUFFER_SIZE);
 	memset(doc->file_name, 0, sizeof(char) * BUFFER_SIZE);
