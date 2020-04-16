@@ -22,12 +22,12 @@
 
 #define KOT_KOT_H
 
-#define PROGNAME "kot"
-#define VERSION "v0.6.6"
-#define AUTHOR "Rinwasyu"
-#define AUTHOR_YEAR "2018"
-#define WEBSITE "https://github.com/Rinwasyu/kot"
-#define LICENSE "GPL v3"
+#define KOT_PROGNAME "kot"
+#define KOT_VERSION "v0.6.6"
+#define KOT_AUTHOR "Rinwasyu"
+#define KOT_AUTHOR_YEAR "2018"
+#define KOT_WEBSITE "https://github.com/Rinwasyu/kot"
+#define KOT_LICENSE "GPL v3"
 #define DRAW_TITLEBAR_HEIGHT 1
 #define DOC_MAXIMUM_ROWS 2000
 #define DOC_MAXIMUM_COLS 1000
