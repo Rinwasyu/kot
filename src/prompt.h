@@ -28,11 +28,11 @@ struct Prompt {
 	int cursor_col;
 	char *buf;
 	void (*init)(struct Prompt *);
-	void (*update)(struct Prompt *);
+	void (*update)(struct Prompt *, char *);
 };
 
 void prompt_init(struct Prompt *prompt);
-void prompt_update(struct Prompt *prompt);
+void prompt_update(struct Prompt *prompt, char *text);
 
 struct Prompt prompt;
 

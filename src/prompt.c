@@ -35,8 +35,10 @@ void prompt_init(struct Prompt *prompt) {
 	memset(prompt->buf, 0, sizeof(char) * BUFFER_SIZE);
 }
 
-void prompt_update(struct Prompt *prompt) {
+void prompt_update(struct Prompt *prompt, char *text) {
 	prompt->init(prompt);
+	strncpy(prompt->buf, text, sizeof(char) * BUFFER_SIZE);
+	prompt->cursor_col = strlen(prompt->buf);
 	prompt->active = 1;
 	draw.repaint(&draw);
 	while (prompt->active) {
