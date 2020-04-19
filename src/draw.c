@@ -69,12 +69,11 @@ void draw_body() {
 }
 
 void draw_prompt() {
-	printf("\e[2;1H\e[7m");
-	int i;
-	for (i = prompt.editor_col; i < min(ws.ws_col + prompt.editor_col, (int)strlen(prompt.buf) + prompt.editor_col); i++) {
+	printf("\e[2;1H\e[7m%s : ", prompt.discr);
+	for (int i = prompt.editor_col; i < min(ws.ws_col + prompt.editor_col - PROMPT_DISCR_LENGTH, (int)strlen(prompt.buf) + prompt.editor_col); i++) {
 		printf("%c", prompt.buf[i]);
 	}
-	for (; i < ws.ws_col; i++) {
+	for (int i = (int)strlen(prompt.buf) - prompt.editor_col; i < ws.ws_col - PROMPT_DISCR_LENGTH; i++) {
 		printf(" ");
 	}
 	printf("\e[m");

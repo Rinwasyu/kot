@@ -31,7 +31,7 @@ void cursor_currentPos(struct Cursor *cursor) {
 	if (prompt.active == 0) {
 		printf("\e[%d;%dH", cursor->row + DRAW_TITLEBAR_HEIGHT + 1, cursor->col + 1);
 	} else {
-		printf("\e[2;%dH", prompt.cursor_col + 1);
+		printf("\e[2;%dH", prompt.cursor_col + 1 + PROMPT_DISCR_LENGTH);
 	}
 	fflush(stdout);
 }
@@ -56,10 +56,9 @@ void cursor_right(struct Cursor *cursor) {
 			}
 		}
 	} else {
-		// TODO:
 		if (prompt.editor_col + prompt.cursor_col < (int)strlen(prompt.buf)) {
-			if (prompt.cursor_col == ws.ws_col - 1) {
-				editor.col++;
+			if (prompt.cursor_col == ws.ws_col - 1 - PROMPT_DISCR_LENGTH) {
+				prompt.editor_col++;
 			} else {
 				prompt.cursor_col++;
 			}
@@ -154,11 +153,11 @@ void cursor_end(struct Cursor *cursor) {
 			cursor->col = ws.ws_col - 1;
 		}
 	} else {
-		if (prompt.editor_col + ws.ws_col - (int)strlen(prompt.buf) >= 0) {
+		if (prompt.editor_col + ws.ws_col - PROMPT_DISCR_LENGTH - (int)strlen(prompt.buf) >= 0) {
 			prompt.cursor_col = (int)strlen(prompt.buf) - prompt.editor_col;
 		} else {
-			prompt.editor_col = (int)strlen(prompt.buf) - ws.ws_col + 1;
-			prompt.cursor_col = ws.ws_col - 1;
+			prompt.editor_col = (int)strlen(prompt.buf) - ws.ws_col + 1 + PROMPT_DISCR_LENGTH;
+			prompt.cursor_col = ws.ws_col - 1 - PROMPT_DISCR_LENGTH;
 		}
 	}
 }

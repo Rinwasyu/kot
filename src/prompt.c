@@ -33,11 +33,14 @@ void prompt_init(struct Prompt *prompt) {
 	prompt->editor_col = 0;
 	prompt->buf = (char *)malloc(sizeof(char) * BUFFER_SIZE);
 	memset(prompt->buf, 0, sizeof(char) * BUFFER_SIZE);
+	prompt->discr = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+	memset(prompt->discr, 0, sizeof(char) * BUFFER_SIZE);
 }
 
-void prompt_update(struct Prompt *prompt, char *text) {
+void prompt_update(struct Prompt *prompt, char *discr, char *autofill) {
 	prompt->init(prompt);
-	strncpy(prompt->buf, text, sizeof(char) * BUFFER_SIZE);
+	strncpy(prompt->discr, discr, sizeof(char) * BUFFER_SIZE);
+	strncpy(prompt->buf, autofill, sizeof(char) * BUFFER_SIZE);
 	prompt->cursor_col = strlen(prompt->buf);
 	prompt->active = 1;
 	draw.repaint(&draw);
@@ -58,6 +61,7 @@ struct Prompt prompt = {
 	0, // Not active
 	0, // prompt->editor_col
 	0, // prompt->cursor_col
+	NULL,
 	NULL,
 	prompt_init,
 	prompt_update

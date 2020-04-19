@@ -27,12 +27,13 @@ struct Prompt {
 	int editor_col;
 	int cursor_col;
 	char *buf;
+	char *discr;
 	void (*init)(struct Prompt *);
-	void (*update)(struct Prompt *, char *);
+	void (*update)(struct Prompt *, char *, char *);
 };
 
 void prompt_init(struct Prompt *prompt);
-void prompt_update(struct Prompt *prompt, char *text);
+void prompt_update(struct Prompt *prompt, char *text, char *autofill);
 
 struct Prompt prompt;
 

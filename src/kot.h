@@ -29,6 +29,7 @@
 #define KOT_WEBSITE "https://github.com/Rinwasyu/kot"
 #define KOT_LICENSE "GPL v3"
 #define DRAW_TITLEBAR_HEIGHT 1
+#define PROMPT_DISCR_LENGTH (3 + (int)strlen(prompt.discr))
 #define DOC_MAXIMUM_ROWS 2000
 #define DOC_MAXIMUM_COLS 1000
 #define BUFFER_SIZE 10000

@@ -169,7 +169,7 @@ void key_input(struct Key *key) {
 				break;
 			case 18:	// Ctrl-r
 				if (prompt.active == 0) {
-					prompt.update(&prompt, doc.file_name);
+					prompt.update(&prompt, "file name", doc.file_name);
 					doc.rename(&doc, prompt.buf);
 					draw.repaint(&draw);
 				}
