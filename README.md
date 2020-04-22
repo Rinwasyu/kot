@@ -17,4 +17,4 @@ make all
 ## License
 Copyright 2018 Rinwasyu
 
-Kot is licensed under GPL v3.
+Kot is licensed under the GPL v3.
