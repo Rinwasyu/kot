@@ -26,15 +26,16 @@
 #include "option.h"
 
 void option_help() {
-	printf("Usage: %s [--help] [--version]\n", PROGNAME);
+	printf("Usage: %s [--help] [--version] [FILE]\n", KOT_PROGNAME);
+	printf("Edit the FILE (a \"file.txt\" by default)\n");
 	exit(0);
 }
 
 void option_version() {
-	printf("%s %s\n", PROGNAME, VERSION);
-	printf("Copyright %s %s\n", AUTHOR_YEAR, AUTHOR);
-	printf("%s\n", WEBSITE);
-	printf("This program is licensed under %s\n", LICENSE);
+	printf("%s %s\n", KOT_PROGNAME, KOT_VERSION);
+	printf("Copyright %s %s\n", KOT_AUTHOR_YEAR, KOT_AUTHOR);
+	printf("%s\n", KOT_WEBSITE);
+	printf("This program is licensed under %s\n", KOT_LICENSE);
 	exit(0);
 }
 

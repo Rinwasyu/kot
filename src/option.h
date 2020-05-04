@@ -32,6 +32,6 @@ void option_help(void);
 void option_version(void);
 void option_readOptions(struct Option *option, int argc, char **argv);
 
-struct Option option;
+extern struct Option option;
 
 #endif

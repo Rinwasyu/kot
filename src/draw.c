@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2018,2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -27,15 +27,28 @@
 #include "draw.h"
 #include "editor.h"
 #include "kot.h"
+#include "prompt.h"
 
 void draw_init() {
-	system("stty echo -icanon min 1 time 0");
-	system("stty -echo");
+	int errors = 0;
+	if (system("stty echo -icanon min 1 time 0") != 0) errors++;
+	if (system("stty -echo") != 0) errors++;
 	setvbuf(stdout, NULL, _IOFBF, 0);
+	
+	if (errors > 0) {
+		printf("draw_init: error\n");
+		exit(-1);
+	}
 }
 
 void draw_exit() {
-	system("stty sane");
+	int errors = 0;
+	if (system("stty sane") != 0) errors++;
+	
+	if (errors > 0) {
+		printf("draw_exit: error\n");
+		exit(-1);
+	}
 }
 
 void draw_clear() {
@@ -43,7 +56,7 @@ void draw_clear() {
 }
 
 void draw_titlebar() {
-	printf("\e[1;1H\e[7m kot %s %dx%d row:%d/%d col:%d \e[m\e[m\n", VERSION, ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, editor.col + cursor.col + 1);
+	printf("\e[1;1H\e[7m kot %s %dx%d row:%d/%d col:%d ( %s )\e[m\e[m\n", KOT_VERSION, ws.ws_col, ws.ws_row, editor.row + cursor.row + 1, doc.rows, editor.col + cursor.col + 1, doc.file_name);
 }
 
 void draw_body() {
@@ -55,10 +68,24 @@ void draw_body() {
 	}
 }
 
+void draw_prompt() {
+	printf("\e[2;1H\e[7m%s : ", prompt.discr);
+	for (int i = prompt.editor_col; i < min(ws.ws_col + prompt.editor_col - PROMPT_DISCR_LENGTH, (int)strlen(prompt.buf) + prompt.editor_col); i++) {
+		printf("%c", prompt.buf[i]);
+	}
+	for (int i = (int)strlen(prompt.buf) - prompt.editor_col; i < ws.ws_col - PROMPT_DISCR_LENGTH; i++) {
+		printf(" ");
+	}
+	printf("\e[m");
+}
+
 void draw_repaint(struct Draw *draw) {
 	draw->clear();
 	draw->titlebar();
 	draw->body();
+	if (prompt.active) {
+		draw->prompt();
+	}
 	cursor.currentPos(&cursor);
 	fflush(stdout);
 }
@@ -69,5 +96,6 @@ struct Draw draw = {
 	draw_clear,
 	draw_titlebar,
 	draw_body,
+	draw_prompt,
 	draw_repaint
 };

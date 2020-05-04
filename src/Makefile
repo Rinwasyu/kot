@@ -23,20 +23,25 @@
 PROGNAME	:= kot
 CC			:= gcc
 CFLAGS		:= -O2 -Wall -W -std=c99
-LDFLAGS		:= 
+LDFLAGS	:= 
 SRCS		:= $(wildcard *.c)
 OBJS		:= $(SRCS:%.c=%.o)
 DEPS		:= $(SRCS:%.c=%.d)
 
+LIB_SRCS	:= $(wildcard lib/*.c)
+LIB_OBJS	:= $(LIB_SRCS:%.c=%.o)
+LIB_DEPS	:= $(LIB_SRCS:%.c=%.d)
+
 all: $(PROGNAME)
 
-$(PROGNAME): $(OBJS)
+$(PROGNAME): $(OBJS) $(LIB_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 %.o: %.c
-	$(CC) $(CFLAGS) -MD -c $<
+	$(CC) $(CFLAGS) -MD -c $< -o $@
 
 clean:
 	rm -rf *.o *.d
 
 -include $(DEPS)
+-include $(LIB_DEPS)

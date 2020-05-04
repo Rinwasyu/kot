@@ -1,5 +1,5 @@
 /*
- * Copyright 2019,2020 Rinwasyu
+ * Copyright 2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -18,22 +18,23 @@
  * 
  */
 
-#ifndef KOT_EDITOR_H
+#ifndef KOT_PROMPT_H
 
-#define KOT_EDITOR_H
+#define KOT_PROMPT_H
 
-#include <sys/ioctl.h>
-
-extern struct winsize ws;
-
-struct Editor {
-	int col;
-	int row;
-	int (*fit)();
+struct Prompt {
+	int active;
+	int editor_col;
+	int cursor_col;
+	char *buf;
+	char *discr;
+	void (*init)(struct Prompt *);
+	void (*update)(struct Prompt *, char *, char *);
 };
 
-int editor_fit();
+void prompt_init(struct Prompt *prompt);
+void prompt_update(struct Prompt *prompt, char *text, char *autofill);
 
-extern struct Editor editor;
+extern struct Prompt prompt;
 
 #endif

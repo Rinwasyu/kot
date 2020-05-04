@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rinwasyu
+ * Copyright 2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -30,6 +30,7 @@ struct Doc {
 	void (*new)(struct Doc *, char *);
 	void (*open)(struct Doc *, char *);
 	void (*save)(struct Doc *);
+	void (*rename)(struct Doc *, char *file_name);
 };
 
 void doc_init(struct Doc *doc);
@@ -40,6 +41,8 @@ void doc_open(struct Doc *doc, char *file_name);
 
 void doc_save(struct Doc *doc);
 
-struct Doc doc;
+void doc_rename(struct Doc *doc, char *file_name);
+
+extern struct Doc doc;
 
 #endif

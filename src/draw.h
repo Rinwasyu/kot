@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rinwasyu
+ * Copyright 2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -28,6 +28,7 @@ struct Draw {
 	void (*clear)();
 	void (*titlebar)();
 	void (*body)();
+	void (*prompt)();
 	void (*repaint)(struct Draw *);
 };
 
@@ -41,8 +42,10 @@ void draw_titlebar();
 
 void draw_body();
 
+void draw_prompt();
+
 void draw_repaint(struct Draw *draw);
 
-struct Draw draw;
+extern struct Draw draw;
 
 #endif

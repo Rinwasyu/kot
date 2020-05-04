@@ -1,5 +1,5 @@
 /*
- * Copyright 2018,2019 Rinwasyu
+ * Copyright 2018,2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -28,80 +28,120 @@
 #include "editor.h"
 #include "key.h"
 #include "kot.h"
+#include "prompt.h"
 
 void key_init() {
-	system("stty stop undef");
-	system("stty start undef");
+	int errors = 0;
+	if (system("stty stop undef") != 0) errors++;
+	if (system("stty start undef") != 0) errors++;
+	
+	if (errors > 0) {
+		printf("key_init: error\n");
+		exit(-1);
+	}
 }
 
 void key_exit() {
 }
 
 void key_pushbuf(char ch) {
-	if (strlen(doc.buf[editor.row + cursor.row]) < DOC_MAXIMUM_COLS) {
-		char cpy_ch;
-		for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
-			cpy_ch = doc.buf[editor.row + cursor.row][i];
-			doc.buf[editor.row + cursor.row][i] = ch;
-			ch = cpy_ch;
+	if (prompt.active == 0) {
+		if (strlen(doc.buf[editor.row + cursor.row]) < DOC_MAXIMUM_COLS) {
+			char cpy_ch;
+			for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]) + 1; i++) {
+				cpy_ch = doc.buf[editor.row + cursor.row][i];
+				doc.buf[editor.row + cursor.row][i] = ch;
+				ch = cpy_ch;
+			}
+		}
+	} else {
+		// TODO:
+		if (strlen(prompt.buf) < BUFFER_SIZE) {
+			char cpy_ch;
+			for (int i = prompt.editor_col + prompt.cursor_col; i < (int)strlen(prompt.buf) + 1; i++) {
+				cpy_ch = prompt.buf[i];
+				prompt.buf[i] = ch;
+				ch = cpy_ch;
+			}
 		}
 	}
 }
 
 void key_enter() {
-	if (doc.rows < DOC_MAXIMUM_ROWS) {
-		char cpy1_buf[DOC_MAXIMUM_COLS];
-		for (int i = editor.row + cursor.row + 1; i < doc.rows + 1; i++) {
-			char cpy2_buf[DOC_MAXIMUM_COLS] = {0};
-			strcpy(cpy2_buf, doc.buf[i]);
-			memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
-			strcpy(doc.buf[i], cpy1_buf);
-			memset(cpy1_buf, 0, sizeof(char) * DOC_MAXIMUM_COLS);
-			strcpy(cpy1_buf, cpy2_buf);
+	if (prompt.active == 0) {
+		if (doc.rows < DOC_MAXIMUM_ROWS) {
+			char cpy1_buf[DOC_MAXIMUM_COLS];
+			for (int i = editor.row + cursor.row + 1; i < doc.rows + 1; i++) {
+				char cpy2_buf[DOC_MAXIMUM_COLS] = {0};
+				strcpy(cpy2_buf, doc.buf[i]);
+				memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+				strcpy(doc.buf[i], cpy1_buf);
+				memset(cpy1_buf, 0, sizeof(char) * DOC_MAXIMUM_COLS);
+				strcpy(cpy1_buf, cpy2_buf);
+			}
+			strcpy(cpy1_buf, &doc.buf[editor.row + cursor.row][editor.col + cursor.col]);
+			memset(&doc.buf[editor.row + cursor.row][editor.col + cursor.col], 0, sizeof(char) * (DOC_MAXIMUM_COLS - editor.col - cursor.col + 1));
+			strcpy(doc.buf[editor.row + cursor.row + 1], cpy1_buf);
+			doc.rows++;
+			cursor.right(&cursor);
 		}
-		strcpy(cpy1_buf, &doc.buf[editor.row + cursor.row][editor.col + cursor.col]);
-		memset(&doc.buf[editor.row + cursor.row][editor.col + cursor.col], 0, sizeof(char) * (DOC_MAXIMUM_COLS - editor.col - cursor.col + 1));
-		strcpy(doc.buf[editor.row + cursor.row + 1], cpy1_buf);
-		doc.rows++;
-		cursor.right(&cursor);
+	} else {
+		prompt.active = 0;
 	}
 }
 
 void key_backspace() {
-	if (editor.col + cursor.col > 0) {
-		cursor.left(&cursor);
-		for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]); i++) {
-			doc.buf[editor.row + cursor.row][i] = doc.buf[editor.row + cursor.row][i+1];
+	if (prompt.active == 0) {
+		if (editor.col + cursor.col > 0) {
+			cursor.left(&cursor);
+			for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]); i++) {
+				doc.buf[editor.row + cursor.row][i] = doc.buf[editor.row + cursor.row][i+1];
+			}
+		} else {
+			if (editor.row + cursor.row > 0) {
+				cursor.left(&cursor);
+				strcpy(&doc.buf[editor.row + cursor.row][strlen(doc.buf[editor.row + cursor.row])], doc.buf[editor.row + cursor.row+1]);
+				for (int i = editor.row + cursor.row + 1; i < DOC_MAXIMUM_ROWS - 1; i++) {
+					memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+					strcpy(doc.buf[i], doc.buf[i+1]);
+					memset(doc.buf[i+1], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+				}
+				doc.rows--;
+			}
 		}
 	} else {
-		if (editor.row + cursor.row > 0) {
+		if (prompt.editor_col + prompt.cursor_col > 0) {
 			cursor.left(&cursor);
-			strcpy(&doc.buf[editor.row + cursor.row][strlen(doc.buf[editor.row + cursor.row])], doc.buf[editor.row + cursor.row+1]);
-			for (int i = editor.row + cursor.row + 1; i < DOC_MAXIMUM_ROWS - 1; i++) {
-				memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
-				strcpy(doc.buf[i], doc.buf[i+1]);
-				memset(doc.buf[i+1], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+			for (int i = prompt.editor_col + prompt.cursor_col; i < (int)strlen(prompt.buf); i++) {
+				prompt.buf[i] = prompt.buf[i+1];
 			}
-			doc.rows--;
 		}
 	}
 }
 
 void key_delete() {
-	if (editor.col + cursor.col < (int)strlen(doc.buf[editor.row + cursor.row])) {
-		for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]); i++) {
-			doc.buf[editor.row + cursor.row][i] = doc.buf[editor.row + cursor.row][i+1];
+	if (prompt.active == 0) {
+		if (editor.col + cursor.col < (int)strlen(doc.buf[editor.row + cursor.row])) {
+			for (int i = editor.col + cursor.col; i < (int)strlen(doc.buf[editor.row + cursor.row]); i++) {
+				doc.buf[editor.row + cursor.row][i] = doc.buf[editor.row + cursor.row][i+1];
+			}
+		} else {
+			if (doc.rows < DOC_MAXIMUM_ROWS) {
+				strcpy(&doc.buf[editor.row + cursor.row][editor.col + cursor.col], doc.buf[editor.row + cursor.row+1]);
+			}
+			for (int i = editor.row + cursor.row + 1; i < doc.rows && i < DOC_MAXIMUM_ROWS - 1; i++) {
+				memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+				strcpy(doc.buf[i], doc.buf[i+1]);
+				memset(doc.buf[i+1], 0, sizeof(char) * DOC_MAXIMUM_COLS);
+			}
+			if (doc.rows > cursor.row + editor.row + 1) doc.rows--;
 		}
 	} else {
-		if (doc.rows < DOC_MAXIMUM_ROWS) {
-			strcpy(&doc.buf[editor.row + cursor.row][editor.col + cursor.col], doc.buf[editor.row + cursor.row+1]);
+		if (prompt.editor_col + prompt.cursor_col < (int)strlen(prompt.buf)) {
+			for (int i = prompt.editor_col + prompt.cursor_col; i < (int)strlen(prompt.buf); i++) {
+				prompt.buf[i] = prompt.buf[i+1];
+			}
 		}
-		for (int i = editor.row + cursor.row + 1; i < doc.rows && i < DOC_MAXIMUM_ROWS - 1; i++) {
-			memset(doc.buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
-			strcpy(doc.buf[i], doc.buf[i+1]);
-			memset(doc.buf[i+1], 0, sizeof(char) * DOC_MAXIMUM_COLS);
-		}
-		if (doc.rows > cursor.row + editor.row + 1) doc.rows--;
 	}
 }
 
@@ -127,7 +167,12 @@ void key_input(struct Key *key) {
 			case 17:	// Ctrl-q
 				exit(0);
 				break;
-			case 18:
+			case 18:	// Ctrl-r
+				if (prompt.active == 0) {
+					prompt.update(&prompt, "file name", doc.file_name);
+					doc.rename(&doc, prompt.buf);
+					draw.repaint(&draw);
+				}
 				break;
 			case 19:	// Ctrl-s
 				doc.save(&doc);

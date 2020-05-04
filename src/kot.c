@@ -19,8 +19,9 @@
  */
 
 #include <stdlib.h>
+#include <unistd.h>
 
-#include "lib/kbhit.c"
+#include "lib/kbhit.h"
 #include "cursor.h"
 #include "doc.h"
 #include "draw.h"
