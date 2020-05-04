@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rinwasyu
+ * Copyright 2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -46,6 +46,6 @@ void draw_prompt();
 
 void draw_repaint(struct Draw *draw);
 
-struct Draw draw;
+extern struct Draw draw;
 
 #endif

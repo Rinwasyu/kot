@@ -35,6 +35,6 @@ struct Prompt {
 void prompt_init(struct Prompt *prompt);
 void prompt_update(struct Prompt *prompt, char *text, char *autofill);
 
-struct Prompt prompt;
+extern struct Prompt prompt;
 
 #endif

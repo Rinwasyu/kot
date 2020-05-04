@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rinwasyu
+ * Copyright 2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -24,7 +24,7 @@
 
 #include <sys/ioctl.h>
 
-struct winsize ws;
+extern struct winsize ws;
 
 struct Editor {
 	int col;
@@ -34,6 +34,6 @@ struct Editor {
 
 int editor_fit();
 
-struct Editor editor;
+extern struct Editor editor;
 
 #endif

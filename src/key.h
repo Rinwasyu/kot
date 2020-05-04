@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rinwasyu
+ * Copyright 2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -54,6 +54,6 @@ void key_delete();
 
 void key_input(struct Key *key);
 
-struct Key key;
+extern struct Key key;
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rinwasyu
+ * Copyright 2019,2020 Rinwasyu
  * 
  * This file is part of kot.
  * 
@@ -48,6 +48,6 @@ void cursor_end(struct Cursor *cursor);
 
 void cursor_home(struct Cursor *cursor);
 
-struct Cursor cursor;
+extern struct Cursor cursor;
 
 #endif
