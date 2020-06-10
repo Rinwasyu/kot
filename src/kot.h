@@ -23,7 +23,7 @@
 #define KOT_KOT_H
 
 #define KOT_PROGNAME "kot"
-#define KOT_VERSION "v0.6.6"
+#define KOT_VERSION "v0.6.7"
 #define KOT_AUTHOR "Rinwasyu"
 #define KOT_AUTHOR_YEAR "2018"
 #define KOT_WEBSITE "https://github.com/Rinwasyu/kot"

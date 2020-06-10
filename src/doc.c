@@ -27,7 +27,12 @@
 
 void doc_init(struct Doc *doc) {
 	doc->buf = (char **)malloc(sizeof(char *) * DOC_MAXIMUM_ROWS);
-	for (int i = 0; i < DOC_MAXIMUM_ROWS; i++) doc->buf[i] = (char *)malloc(sizeof(char) * DOC_MAXIMUM_COLS);
+	if (doc->buf == NULL) exit(1);
+	
+	for (int i = 0; i < DOC_MAXIMUM_ROWS; i++) {
+		doc->buf[i] = (char *)malloc(sizeof(char) * DOC_MAXIMUM_COLS);
+		if (doc->buf[i] == NULL) exit(1);
+	}
 }
 
 void doc_new(struct Doc *doc, char *file_name) {
@@ -50,7 +55,7 @@ void doc_open(struct Doc *doc, char *file_name) {
 		doc->rows++;
 		memset(doc->buf[i], 0, sizeof(char) * DOC_MAXIMUM_COLS);
 		if (f_buf[strlen(f_buf) - 1] == '\n') f_buf[strlen(f_buf) - 1] = 0; // Remove '\n'
-		strcpy(doc->buf[i], f_buf);
+		strncpy(doc->buf[i], f_buf, sizeof(char) * DOC_MAXIMUM_COLS);
 		memset(f_buf, 0, sizeof(char) * DOC_MAXIMUM_COLS);
 	}
 	
@@ -74,8 +79,10 @@ void doc_save(struct Doc *doc) {
 
 void doc_rename(struct Doc *doc, char *file_name) {
 	doc->file_name = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+	if (doc->file_name == NULL) exit(1);
+	
 	memset(doc->file_name, 0, sizeof(char) * BUFFER_SIZE);
-	strncpy(doc->file_name, file_name, BUFFER_SIZE);
+	strncpy(doc->file_name, file_name, sizeof(char) * BUFFER_SIZE);
 }
 
 struct Doc doc = {

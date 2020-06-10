@@ -37,7 +37,7 @@ void draw_init() {
 	
 	if (errors > 0) {
 		printf("draw_init: error\n");
-		exit(-1);
+		exit(1);
 	}
 }
 

@@ -32,8 +32,10 @@ void prompt_init(struct Prompt *prompt) {
 	prompt->cursor_col = 0;
 	prompt->editor_col = 0;
 	prompt->buf = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+	if (prompt->buf == NULL) exit(1);
 	memset(prompt->buf, 0, sizeof(char) * BUFFER_SIZE);
 	prompt->discr = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+	if (prompt->discr == NULL) exit(1);
 	memset(prompt->discr, 0, sizeof(char) * BUFFER_SIZE);
 }
 
